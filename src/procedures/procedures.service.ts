@@ -32,6 +32,13 @@ export class ProceduresService {
    async addProcedureClass(dto: addClassDto) {
       const procedureClass = await this.ClassRepository.create(dto)
       return procedureClass;
-
+   }
+   async getAllClass() {
+      const procedureClass = await this.ClassRepository.findAll();
+      return procedureClass;
+   }
+   async getAllType() {
+      const procedureClass = await this.TypeRepository.findAll();
+      return procedureClass;
    }
 }

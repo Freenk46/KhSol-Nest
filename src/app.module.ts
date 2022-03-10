@@ -1,3 +1,5 @@
+import { ProcedureBasket } from 'src/basket/procedure-basket.model';
+import { Basket } from './basket/basket.model';
 import { ProcedureGender } from './procedures/procedure-gender.model';
 import { ProcedureType } from './procedures/procedure-type.model';
 import { ProcedureClass } from './procedures/procedure-class.model';
@@ -19,8 +21,8 @@ import { BasketController } from './basket/basket.controller';
 import { BasketModule } from './basket/basket.module';
 
 @Module({
-   controllers: [BasketController],
-   providers: [BasketService],
+   controllers: [],
+   providers: [],
    imports: [
 
       ConfigModule.forRoot({
@@ -34,7 +36,7 @@ import { BasketModule } from './basket/basket.module';
          username: process.env.POSTGRES_USER,
          password: process.env.POSTGRES_PASSWORD,
          database: process.env.POSTGRES_DB,
-         models: [User, Role, UserRoles, Profile, Procedure, ProcedureClass, ProcedureType, ProcedureGender],
+         models: [User, Role, UserRoles, Profile, Procedure, ProcedureClass, ProcedureType, ProcedureGender, Basket, ProcedureBasket],
          autoLoadModels: true
       }),
       UsersModule,

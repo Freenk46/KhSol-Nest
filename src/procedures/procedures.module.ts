@@ -6,12 +6,17 @@ import { ProceduresController } from './procedures.controller';
 import { ProceduresService } from './procedures.service';
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { ProcedureBasket } from 'src/basket/procedure-basket.model';
+
 
 @Module({
    providers: [ProceduresService],
    controllers: [ProceduresController],
    imports: [
-      SequelizeModule.forFeature([Procedure, ProcedureClass, ProcedureType, ProcedureGender]),
+      SequelizeModule.forFeature([
+         ProcedureBasket,
+         Procedure, ProcedureClass, ProcedureType,
+         ProcedureGender]),
    ],
    exports: [
       ProceduresService

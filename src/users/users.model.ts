@@ -1,3 +1,4 @@
+import { Basket } from './../basket/basket.model';
 import { Profile } from './../profile/profile.model';
 import { UserRoles } from './../roles/user-roles.model';
 import { Role } from './../roles/roles.model';
@@ -36,7 +37,10 @@ export class User extends Model<User, UserCreationAttrs> {
    roles: Role[];
 
    @HasOne(() => Profile)
-   profile: Profile[]
+   profile: Profile
+
+   @HasOne(() => Basket)
+   basket: Basket[]
 
 
 }

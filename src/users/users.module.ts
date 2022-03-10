@@ -1,4 +1,10 @@
-import { ProfileService } from './../profile/profile.service';
+import { ProcedureGender } from './../procedures/procedure-gender.model';
+import { ProcedureType } from './../procedures/procedure-type.model';
+import { ProcedureClass } from './../procedures/procedure-class.model';
+import { Procedure } from './../procedures/procedure.model';
+import { ProcedureBasket } from './../basket/procedure-basket.model';
+import { BasketModule } from './../basket/basket.module';
+import { Basket } from './../basket/basket.model';
 import { Profile } from './../profile/profile.model';
 import { AuthModule } from './../auth/auth.module';
 import { RolesModule } from './../roles/roles.module';
@@ -15,15 +21,18 @@ import { ProfileModule } from 'src/profile/profile.module';
   providers: [UsersService],
   controllers: [UsersController],
   imports: [
-    SequelizeModule.forFeature([User, Role, UserRoles, Profile]),
+    SequelizeModule.forFeature([
+      User, Role, UserRoles,
+      Profile, Basket, ProcedureBasket
+    ]),
     RolesModule,
     ProfileModule,
+    BasketModule,
     forwardRef(() => AuthModule)
   ],
   exports: [
     UsersService,
     AuthModule,
-
   ]
 })
 export class UsersModule { }

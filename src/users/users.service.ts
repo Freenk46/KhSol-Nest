@@ -1,3 +1,4 @@
+import { BasketService } from './../basket/basket.service';
 import { ProfileService } from './../profile/profile.service';
 import { RolesService } from './../roles/roles.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,12 +15,14 @@ export class UsersService {
       @InjectModel(User) private userRepository: typeof User,
       private roleService: RolesService,
       private profileService: ProfileService,
+      private basketService: BasketService,
 
    ) { }
    async createUser(dto: CreateUserDto,) {
       const user = await this.userRepository.create(dto);
       const userId = user.id
       await this.profileService.createProfile({ userId })
+      await this.basketService.createBasket({ userId })
       const role = await this.roleService.getRoleByValue("USER")
       await user.$set('roles', [role.id])
       user.roles = [role]

@@ -33,6 +33,19 @@ export class ProceduresController {
    addClass(@Body() classDto: addClassDto) {
       return this.procedureService.addProcedureClass(classDto)
    }
+   @ApiOperation({ summary: 'ყველა კატეგორიის მოთხოვნა' })
+   @ApiResponse({ status: 200, type: ProcedureClass })
+   @Get('/class')
+   getAllClass() {
+      return this.procedureService.getAllClass()
+   }
+
+   @ApiOperation({ summary: 'ყველა ტიპის მოთხოვნა' })
+   @ApiResponse({ status: 200, type: ProcedureType })
+   @Get('/type')
+   getAllType() {
+      return this.procedureService.getAllType()
+   }
 
 
    @ApiOperation({ summary: 'ყველა პროცედურის მოთხოვნა' })

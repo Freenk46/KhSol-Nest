@@ -1,3 +1,4 @@
+import { ProcedureBasket } from './../basket/procedure-basket.model';
 import { ProcedureGender } from './procedure-gender.model';
 import { ProcedureClass } from './procedure-class.model';
 import { ProcedureType } from './procedure-type.model';
@@ -65,7 +66,8 @@ export class Procedure extends Model<Procedure, ProcedureCreationAttrs> {
    @BelongsTo(() => ProcedureGender)
    gender: ProcedureGender
 
-
+   @HasOne(() => ProcedureBasket)
+   procedurebasket: ProcedureBasket
 
 
 }
