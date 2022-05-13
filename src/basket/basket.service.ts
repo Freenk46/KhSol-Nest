@@ -11,8 +11,6 @@ export class BasketService {
       @InjectModel(Basket) private basketRepository: typeof Basket,
       @InjectModel(ProcedureBasket) private procedureBasketRepository: typeof ProcedureBasket
    ) { }
-
-
    async createBasket(dto: CreateBasketDto) {
       const basket = await this.basketRepository.create(dto);
       return basket;
@@ -22,7 +20,7 @@ export class BasketService {
       return procedurebasket;
    }
    async getAllProcedureByBaskeId(basketId: number) {
-      const procedurebasket = await this.procedureBasketRepository.findOne({ where: { basketId }, include: { all: true } })
+      const procedurebasket = await this.procedureBasketRepository.findAll({ where: { basketId }, include: { all: true } })
       return procedurebasket;
    }
 }

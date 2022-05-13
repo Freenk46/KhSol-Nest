@@ -6,6 +6,9 @@ import { addProcedureDto } from './dto/add-procedure.dto';
 import { Procedure } from './procedure.model';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { UpdateClassDto } from './dto/updateType.dto';
+import { UpdateTypeDto } from './dto/updateClass.dto';
+import { UpdateProcedureDto } from './dto/update-procedure.dto';
 
 @Injectable()
 export class ProceduresService {
@@ -40,5 +43,20 @@ export class ProceduresService {
    async getAllType() {
       const procedureClass = await this.TypeRepository.findAll();
       return procedureClass;
+   }
+   async UpdateProcedureClass(dto: UpdateClassDto) {
+      const id = dto.id
+      const user = await this.ClassRepository.update(dto, { where: { id } });
+      return user;
+   }
+   async UpdateProcedureType(dto: UpdateTypeDto) {
+      const id = dto.id
+      const user = await this.TypeRepository.update(dto, { where: { id } });
+      return user;
+   }
+   async UpdateProcedure(dto: UpdateProcedureDto) {
+      const id = dto.id
+      const user = await this.ProcedureRepository.update(dto, { where: { id } });
+      return user;
    }
 }

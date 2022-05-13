@@ -22,7 +22,6 @@ export class ProfileService {
       const userId = dto.userId
       const user = await this.profileRepository.update(dto, { where: { userId } });
       return user;
-
    }
    async updateProfile(dto: UpdateProfileDto) {
 

@@ -1,3 +1,5 @@
+import { UpdateClassDto } from './dto/updateType.dto';
+import { UpdateTypeDto } from './dto/updateClass.dto';
 import { ProcedureType } from './procedure-type.model';
 import { ProcedureClass } from './procedure-class.model';
 import { addClassDto } from './dto/add-class.dto';
@@ -5,8 +7,10 @@ import { addTypeDto } from './dto/add-type.dto';
 import { ProceduresService } from './procedures.service';
 import { Procedure } from './procedure.model';
 import { addProcedureDto } from './dto/add-procedure.dto';
-import { Body, Controller, Post, Get } from '@nestjs/common';
+import { Body, Controller, Post, Get, Put } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { UpdateProcedureDto } from './dto/update-procedure.dto';
 @ApiTags('Procedures')
 @Controller('procedures')
 export class ProceduresController {
@@ -53,6 +57,27 @@ export class ProceduresController {
    @Get()
    getAll() {
       return this.procedureService.getAllProcedure()
+   }
+
+   @ApiOperation({ summary: 'პროცედურის ტიპის  განახლება' })
+   @ApiResponse({ status: 200, type: ProcedureType })
+   @Put('/type')
+   updateType(@Body() dto: UpdateTypeDto) {
+      return this.procedureService.UpdateProcedureType(dto);
+   }
+
+   @ApiOperation({ summary: 'პროცედურის კატეგორიის  განახლება' })
+   @ApiResponse({ status: 200, type: ProcedureClass })
+   @Put('/class')
+   updateClass(@Body() dto: UpdateClassDto) {
+      return this.procedureService.UpdateProcedureClass(dto);
+   }
+
+   @ApiOperation({ summary: 'პროცედურის   განახლება' })
+   @ApiResponse({ status: 200, type: ProcedureClass })
+   @Put()
+   updateProcedure(@Body() dto: UpdateProcedureDto) {
+      return this.procedureService.UpdateProcedure(dto);
    }
 
 }

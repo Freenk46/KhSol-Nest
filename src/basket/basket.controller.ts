@@ -17,7 +17,7 @@ export class BasketController {
    @ApiOperation({ summary: 'კალათაში დამატება' })
    @ApiResponse({ status: 200, type: ProcedureBasketDto })
    @Get('/:basketId')
-   getAllProcedureById(@Body('basketId') id: number) {
-      return this.basketService.getAllProcedureByBaskeId(id);
+   getAllProcedureById(@Param('basketId') basketId: number) {
+      return this.basketService.getAllProcedureByBaskeId(basketId);
    }
 }

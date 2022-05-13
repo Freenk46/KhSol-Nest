@@ -17,4 +17,10 @@ export class RolesService {
       console.log(role)
       return role;
    }
+
+   async getAllRoles() {
+      const procedure = await this.roleRepository.findAll();
+      return procedure;
+
+   }
 }

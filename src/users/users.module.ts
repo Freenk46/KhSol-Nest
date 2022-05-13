@@ -1,7 +1,5 @@
-import { ProcedureGender } from './../procedures/procedure-gender.model';
-import { ProcedureType } from './../procedures/procedure-type.model';
-import { ProcedureClass } from './../procedures/procedure-class.model';
-import { Procedure } from './../procedures/procedure.model';
+import { TokenModule } from './../token/token.module';
+import { Token } from './../token/token.model';
 import { ProcedureBasket } from './../basket/procedure-basket.model';
 import { BasketModule } from './../basket/basket.module';
 import { Basket } from './../basket/basket.model';
@@ -23,7 +21,7 @@ import { ProfileModule } from 'src/profile/profile.module';
   imports: [
     SequelizeModule.forFeature([
       User, Role, UserRoles,
-      Profile, Basket, ProcedureBasket
+      Profile, Basket, ProcedureBasket, Token
     ]),
     RolesModule,
     ProfileModule,

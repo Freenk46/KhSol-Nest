@@ -1,3 +1,4 @@
+import { Token } from './token/token.model';
 import { ProcedureBasket } from 'src/basket/procedure-basket.model';
 import { Basket } from './basket/basket.model';
 import { ProcedureGender } from './procedures/procedure-gender.model';
@@ -16,18 +17,17 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { Profile } from './profile/profile.model';
 import { ProceduresModule } from './procedures/procedures.module';
-import { BasketService } from './basket/basket.service';
-import { BasketController } from './basket/basket.controller';
 import { BasketModule } from './basket/basket.module';
+import { TokenModule } from './token/token.module';
+import { MailModule } from './mail/mail.module';
+
 
 @Module({
    controllers: [],
    providers: [],
    imports: [
-
       ConfigModule.forRoot({
          envFilePath: `.${process.env.NODE_ENV}.env`
-
       }),
       SequelizeModule.forRoot({
          dialect: 'postgres',
@@ -36,7 +36,7 @@ import { BasketModule } from './basket/basket.module';
          username: process.env.POSTGRES_USER,
          password: process.env.POSTGRES_PASSWORD,
          database: process.env.POSTGRES_DB,
-         models: [User, Role, UserRoles, Profile, Procedure, ProcedureClass, ProcedureType, ProcedureGender, Basket, ProcedureBasket],
+         models: [User, Role, UserRoles, Profile, Procedure, ProcedureClass, ProcedureType, ProcedureGender, Basket, ProcedureBasket, Token],
          autoLoadModels: true
       }),
       UsersModule,
@@ -45,6 +45,8 @@ import { BasketModule } from './basket/basket.module';
       ProfileModule,
       ProceduresModule,
       BasketModule,
+      TokenModule,
+      MailModule
    ]
 })
 export class AppModule { }

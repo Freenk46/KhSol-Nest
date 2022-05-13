@@ -1,3 +1,4 @@
+import { Token } from './../token/token.model';
 import { Basket } from './../basket/basket.model';
 import { Profile } from './../profile/profile.model';
 import { UserRoles } from './../roles/user-roles.model';
@@ -8,10 +9,14 @@ import { ApiProperty, } from '@nestjs/swagger';
 interface UserCreationAttrs {
    email: string;
    password: string;
+   activationLink: string;
 }
 
 @Table({ tableName: 'users' })
 export class User extends Model<User, UserCreationAttrs> {
+   refreshToken(refreshToken: any) {
+      throw new Error('Method not implemented.');
+   }
 
    @ApiProperty({ example: '1', description: 'უნიკალური იდენტიფიკატორი' })
    @Column({ type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true })
@@ -20,6 +25,15 @@ export class User extends Model<User, UserCreationAttrs> {
    @ApiProperty({ example: 'მომხმარებელი@gmail.com', description: 'ელექტრონული მისამართი' })
    @Column({ type: DataType.STRING, unique: true, allowNull: false })
    email: string;
+
+   @ApiProperty({ example: 'true', description: 'აქტივაცია' })
+   @Column({ type: DataType.BOOLEAN, defaultValue: false })
+   isActivated: boolean;
+
+   @ApiProperty({ example: '...', description: 'აქტივაცია' })
+   @Column({ type: DataType.STRING })
+   activationLink: string;
+
 
    @ApiProperty({ example: '12345678', description: 'პაროლი' })
    @Column({ type: DataType.STRING, allowNull: false })
@@ -41,6 +55,10 @@ export class User extends Model<User, UserCreationAttrs> {
 
    @HasOne(() => Basket)
    basket: Basket[]
+
+   @HasOne(() => Token)
+   token: Token
+
 
 
 }

@@ -9,6 +9,7 @@ import { AddRoleDto } from './dto/add-role.dto';
 import { BanUserDto } from './dto/ban-user.tdo';
 
 
+
 @Injectable()
 export class UsersService {
    constructor(
@@ -28,8 +29,11 @@ export class UsersService {
       user.roles = [role]
       return user;
    }
-   async getAllUsers() {
-      const users = await this.userRepository.findAll({ include: { all: true } });
+   async getAllUsers(limit: number, page: number) {
+      limit = limit || 4;
+      page = page || 1;
+      const offset = page * limit - limit;
+      const users = await this.userRepository.findAndCountAll({ include: { all: true }, limit, offset });
       return users;
 
    }
@@ -54,6 +58,10 @@ export class UsersService {
       user.baned = true;
       user.banReason = dto.BanReason;
       await user.save();
+      return user;
+   }
+   async getUserbyId(id: number) {
+      const user = await this.userRepository.findOne({ where: { id }, include: { all: true } })
       return user;
    }
 }

@@ -9,4 +9,8 @@ export class CreateUserDto {
    @IsString({ message: ' უნდა იყოს სტრიქონი' })
    @Length(4, 16, { message: 'უნდა იყოს 4 ზე მეტი 16 ნაკლები' })
    readonly password: string
+
+   @ApiProperty({ example: '...', description: 'activationLink' })
+   @IsString({ message: ' უნდა იყოს სტრიქონი' })
+   readonly activationLink: string
 }

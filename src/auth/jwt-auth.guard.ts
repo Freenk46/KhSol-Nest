@@ -1,4 +1,4 @@
-import { User } from './../users/users.model';
+
 import { JwtService } from '@nestjs/jwt';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Observable } from "rxjs";
@@ -14,7 +14,7 @@ export class JwtAuthGuar implements CanActivate {
          const authHeader = req.headers.authorization;
          const bearer = authHeader.split(' ')[0]
          const token = authHeader.split(' ')[1]
-         if (bearer == 'bearer' || !token) {
+         if (bearer !== 'bearer' || !token) {
 
             throw new UnauthorizedException({ meesage: 'მომხმარებლი არ არის ავტორიზირებული ' })
          }
@@ -22,7 +22,6 @@ export class JwtAuthGuar implements CanActivate {
          req.user = user;
          return true;
       } catch (e) {
-
          throw new UnauthorizedException({ meesage: 'მომხმარებლი არ არის ავტორიზირებული ' })
       }
    }
