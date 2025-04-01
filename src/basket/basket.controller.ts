@@ -1,23 +1,41 @@
-import { ProcedureBasketDto } from './dto/procedure-Basket.dto';
+import {
+   Body,
+   Controller,
+   Get,
+   Param,
+   Patch,
+   Post,
+   UsePipes,
+   ValidationPipe,
+} from '@nestjs/common';
 import { BasketService } from './basket.service';
-import { Body, Controller, Get, Param, Put, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-@ApiTags('Basket')
+import { AddItemDto } from './dto/add-item.dto';
+
 @Controller('basket')
 export class BasketController {
-   constructor(private basketService: BasketService) { }
+   constructor(private readonly basketService: BasketService) { }
 
-   @ApiOperation({ summary: 'კალათაში დამატება' })
-   @ApiResponse({ status: 200, type: ProcedureBasketDto })
-   @Post()
-   addBasket(@Body() dto: ProcedureBasketDto) {
-      return this.basketService.addProcedureBasket(dto);
+   @Post(':userId')
+   async create(@Param('userId') userId: string) {
+      return this.basketService.createBasket({ userId });
    }
 
-   @ApiOperation({ summary: 'კალათაში დამატება' })
-   @ApiResponse({ status: 200, type: ProcedureBasketDto })
-   @Get('/:basketId')
-   getAllProcedureById(@Param('basketId') basketId: number) {
-      return this.basketService.getAllProcedureByBaskeId(basketId);
+   @Get(':userId')
+   async getBasket(@Param('userId') userId: string) {
+      return this.basketService.getBasketByUserId(userId);
+   }
+
+   @Patch(':userId/add')
+   @UsePipes(ValidationPipe)
+   async addItem(
+      @Param('userId') userId: string,
+      @Body() dto: AddItemDto,
+   ) {
+      return this.basketService.addItem(userId, dto.itemId);
+   }
+
+   @Patch(':userId/clear')
+   async clearBasket(@Param('userId') userId: string) {
+      return this.basketService.clearBasket(userId);
    }
 }

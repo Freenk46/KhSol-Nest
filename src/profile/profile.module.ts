@@ -1,22 +1,15 @@
-import { User } from './../users/users.model';
-import { Profile } from './profile.model';
-import { ProfileService } from './profile.service';
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Profile, ProfileSchema } from './profile.schema';
+import { ProfileService } from './profile.service';
 import { ProfileController } from './profile.controller';
-import { SequelizeModule } from '@nestjs/sequelize';
-
 
 @Module({
+   imports: [
+      MongooseModule.forFeature([{ name: Profile.name, schema: ProfileSchema }]),
+   ],
    providers: [ProfileService],
    controllers: [ProfileController],
-   imports: [
-      SequelizeModule.forFeature([User,
-         Profile,]),
-   ],
-   exports: [
-      ProfileService
-   ]
-
+   exports: [ProfileService],
 })
-
 export class ProfileModule { }

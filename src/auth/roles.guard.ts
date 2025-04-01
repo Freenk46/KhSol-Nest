@@ -1,36 +1,30 @@
-import { ROLES_KEY } from './roles.decorator';
-import { JwtService } from '@nestjs/jwt';
-import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
-import { Observable } from "rxjs";
+import {
+   CanActivate,
+   ExecutionContext,
+   Injectable,
+   ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-   constructor(private jwtService: JwtService,
-      private reflector: Reflector
-   ) { }
-   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-      try {
-         const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
-            context.getHandler(),
-            context.getClass(),
-         ])
-         if (!requiredRoles) {
-            return true;
-         }
-         const req = context.switchToHttp().getRequest()
-         const authHeader = req.headers.authorization;
-         const bearer = authHeader.split(' ')[0]
-         const token = authHeader.split(' ')[1]
-         if (bearer == 'bearer' || !token) {
+   constructor(private reflector: Reflector) { }
 
-            throw new UnauthorizedException({ meesage: 'მომხმარებლი არ არის ავტორიზირებული ' })
-         }
-         const user = this.jwtService.verify(token);
-         req.user = user;
-         return user.roles.some(role => requiredRoles.includes(role.value));
-      } catch (e) {
-         throw new HttpException('არ გაქვთ უფლება', HttpStatus.FORBIDDEN);
+   canActivate(context: ExecutionContext): boolean {
+      const requiredRoles = this.reflector.getAllAndOverride<string[]>('roles', [
+         context.getHandler(),
+         context.getClass(),
+      ]);
+
+      if (!requiredRoles) return true;
+
+      const request = context.switchToHttp().getRequest();
+      const user = request.user;
+
+      if (!user?.roles || !user.roles.some((role: string) => requiredRoles.includes(role))) {
+         throw new ForbiddenException('თქვენ არ გაქვთ წვდომის უფლება');
       }
+
+      return true;
    }
 }

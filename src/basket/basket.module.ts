@@ -1,24 +1,15 @@
-import { ProcedureBasket } from './procedure-basket.model';
-import { Basket } from './basket.model';
-import { BasketController } from './basket.controller';
-import { BasketService } from './basket.service';
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { Profile } from 'src/profile/profile.model';
-import { Role } from 'src/roles/roles.model';
-import { UserRoles } from 'src/roles/user-roles.model';
-import { User } from 'src/users/users.model';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Basket, BasketSchema } from './basket.schema';
+import { BasketService } from './basket.service';
+import { BasketController } from './basket.controller';
 
 @Module({
-
+   imports: [
+      MongooseModule.forFeature([{ name: Basket.name, schema: BasketSchema }]),
+   ],
    providers: [BasketService],
    controllers: [BasketController],
-   imports: [
-      SequelizeModule.forFeature([Profile, Role, UserRoles, User, Basket, ProcedureBasket]),
-   ],
-   exports: [
-      BasketService
-   ]
-
+   exports: [BasketService],
 })
 export class BasketModule { }

@@ -1,26 +1,53 @@
-import { ProcedureBasket } from './procedure-basket.model';
-import { ProcedureBasketDto } from './dto/procedure-Basket.dto';
-import { CreateBasketDto } from './dto/create-baslet.dto';
-import { Basket } from './basket.model';
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Basket, BasketDocument } from './basket.schema';
 
 @Injectable()
 export class BasketService {
    constructor(
-      @InjectModel(Basket) private basketRepository: typeof Basket,
-      @InjectModel(ProcedureBasket) private procedureBasketRepository: typeof ProcedureBasket
+      @InjectModel(Basket.name) private basketModel: Model<BasketDocument>,
    ) { }
-   async createBasket(dto: CreateBasketDto) {
-      const basket = await this.basketRepository.create(dto);
-      return basket;
+
+   async createBasket(data: { userId: string }): Promise<Basket> {
+      const existing = await this.basketModel.findOne({ userId: data.userId });
+      if (existing) {
+         throw new HttpException('კალათა უკვე არსებობს', HttpStatus.BAD_REQUEST);
+      }
+
+      const basket = new this.basketModel({
+         userId: data.userId,
+         items: [],
+         total: 0,
+      });
+
+      return basket.save();
    }
-   async addProcedureBasket(dto: ProcedureBasketDto) {
-      const procedurebasket = await this.procedureBasketRepository.create(dto);
-      return procedurebasket;
+
+   async getBasketByUserId(userId: string): Promise<Basket | null> {
+      return this.basketModel.findOne({ userId });
    }
-   async getAllProcedureByBaskeId(basketId: number) {
-      const procedurebasket = await this.procedureBasketRepository.findAll({ where: { basketId }, include: { all: true } })
-      return procedurebasket;
+
+   async addItem(userId: string, itemId: string): Promise<Basket> {
+      const basket = await this.basketModel.findOne({ userId });
+      if (!basket) {
+         throw new HttpException('კალათა ვერ მოიძებნა', HttpStatus.NOT_FOUND);
+      }
+
+      basket.items.push(itemId);
+      // სურვილის შემთხვევაში total განახლდეს აქ
+
+      return basket.save();
+   }
+
+   async clearBasket(userId: string): Promise<Basket> {
+      const basket = await this.basketModel.findOne({ userId });
+      if (!basket) {
+         throw new HttpException('კალათა ვერ მოიძებნა', HttpStatus.NOT_FOUND);
+      }
+
+      basket.items = [];
+      basket.total = 0;
+      return basket.save();
    }
 }

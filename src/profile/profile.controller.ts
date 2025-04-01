@@ -1,42 +1,35 @@
-import { UpdateProfileDto } from './dto/update-profile.dto';
+import {
+   Body,
+   Controller,
+   Get,
+   Param,
+   Patch,
+   Post,
+   UsePipes,
+   ValidationPipe,
+} from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Put, Get, Param } from '@nestjs/common';
-import { Profile } from './profile.model';
-@ApiTags('Profile')
+import { CreateProfileDto } from './dto/create-profile.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+
 @Controller('profile')
 export class ProfileController {
-   constructor(private profileService: ProfileService) { }
+   constructor(private readonly profileService: ProfileService) { }
 
-   @ApiOperation({ summary: 'პროფილის მოთხოვნა' })
-   @ApiResponse({ status: 200 })
-   @Get('/:Id')
-   getProfile(@Param('Id') id: number) {
-      return this.profileService.getProfile(id);
+   @Post()
+   @UsePipes(ValidationPipe)
+   async create(@Body() dto: CreateProfileDto) {
+      return this.profileService.createProfile(dto);
    }
 
-   @ApiOperation({ summary: 'პროფილის განახლება' })
-   @ApiResponse({ status: 200, type: Profile })
-   @Put()
-   update(@Body() dto: UpdateProfileDto) {
-      return this.profileService.UpdateProfile(dto);
+   @Get(':userId')
+   async getByUserId(@Param('userId') userId: string) {
+      return this.profileService.getProfileByUserId(userId);
    }
 
-
-   @ApiOperation({ summary: 'ფოტოს ატვირთვა' })
-   @ApiResponse({ status: 200 })
-   @Put('/photo')
-   addPhoto(@Body() profileDto: UpdateProfileDto) {
+   @Patch(':userId')
+   @UsePipes(ValidationPipe)
+   async update(@Param('userId') userId: string, @Body() dto: UpdateProfileDto) {
+      return this.profileService.updateProfile(userId, dto);
    }
-
-
-   @ApiOperation({ summary: 'ფოტოს მოთხოვნა' })
-   @ApiResponse({ status: 200 })
-   @Get('/photo/:Id')
-   getPhoto(@Param('Id') id: number) {
-      return this.profileService.getProfile(id);
-   }
-
-
-
 }

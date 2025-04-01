@@ -1,32 +1,24 @@
-import { MailerModule } from '@nestjs-modules/mailer';
-import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { join } from 'path';
 
-const bullModule = BullModule.forRoot(mailBullConfig);
 @Module({
-   providers: [MailService],
-   controllers: [],
    imports: [
-      bullModule,
       MailerModule.forRoot({
-         defaults: {
-            from: process.env.SMTP_USER,
-         },
          transport: {
-            host: process.env.SMTP_HOST,
-            port: process.env.SMTP_PORT,
-            secure: true,
-            ignoreTLS: true,
+            service: 'gmail',
             auth: {
                user: process.env.SMTP_USER,
-               password: process.env.SMTP_PASSWORD
-            }
+               pass: process.env.SMTP_PASSWORD,
+            },
          },
-         preview: true,
+         defaults: {
+            from: `"KhSol Support" <${process.env.SMTP_USER}>`,
+         },
          template: {
-            dir: process.cwd() + '/template/',
+            dir: join(__dirname, 'templates'),
             adapter: new HandlebarsAdapter(),
             options: {
                strict: true,
@@ -34,15 +26,7 @@ const bullModule = BullModule.forRoot(mailBullConfig);
          },
       }),
    ],
-   exports: [
-      MailService,
-      MailerModule,
-      bullModule
-   ]
+   providers: [MailService],
+   exports: [MailService],
 })
 export class MailModule { }
-
-function mailBullConfig(mailBullConfig: any) {
-   throw new Error('Function not implemented.');
-}
-

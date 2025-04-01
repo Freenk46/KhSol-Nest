@@ -1,30 +1,25 @@
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { NestFactory } from "@nestjs/core";
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as cookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
 
+async function bootstrap() {
+   const app = await NestFactory.create(AppModule);
 
+   // 🌐 CORS-ის ჩართვა (მნიშვნელოვანია თუ front-end უკავშირდება)
+   app.enableCors();
 
-async function start() {
+   // ✅ გლობალური ValidationPipe — class-validator + class-transformer მუშაობისთვის
+   app.useGlobalPipes(
+      new ValidationPipe({
+         whitelist: true,             // ზედმეტი ველები მოიცილოს
+         forbidNonWhitelisted: true, // ზედმეტი ველზე შეცდომა დააბრუნოს
+         transform: true              // DTO-ში ავტომატურად გარდაქმნას request body
+      }),
+   );
 
-   const PORT = process.env.PORT || 5000;
-   const app = await NestFactory.create(AppModule)
-   app.use(cookieParser());
-   app.enableCors({
-      origin: process.env.CLIENT_HOST,
-      credentials: true,
-   })
-
-   const config = new DocumentBuilder()
-      .setTitle('Back End Experiance')
-      .setDescription('დოკუმენტაცია REST API')
-      .setVersion('1.0.0')
-      .addTag('BECK-NEST')
-      .build()
-   const document = SwaggerModule.createDocument(app, config);
-   SwaggerModule.setup('/api/docs', app, document)
-
-   await app.listen(PORT, () => console.log(`server started  =${PORT}`))
-
+   // 🚀 პორტის განსაზღვრა და აპის გაშვება
+   const PORT = process.env.PORT || 3000;
+   await app.listen(PORT);
+   console.log(`🚀 Server started on http://localhost:${PORT}`);
 }
-start()
+bootstrap();

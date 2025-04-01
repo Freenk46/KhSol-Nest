@@ -1,67 +1,67 @@
-import { BasketService } from './../basket/basket.service';
-import { ProfileService } from './../profile/profile.service';
-import { RolesService } from './../roles/roles.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { User } from './users.model';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User, UserDocument } from './users.schema';
+import { CreateUserDto } from './dto/create-user.dto';
 import { AddRoleDto } from './dto/add-role.dto';
 import { BanUserDto } from './dto/ban-user.tdo';
-
-
+import { RolesService } from './../roles/roles.service';
+import { ProfileService } from './../profile/profile.service';
+import { BasketService } from './../basket/basket.service';
 
 @Injectable()
 export class UsersService {
    constructor(
-      @InjectModel(User) private userRepository: typeof User,
+      @InjectModel(User.name) private userModel: Model<UserDocument>,
       private roleService: RolesService,
       private profileService: ProfileService,
       private basketService: BasketService,
-
    ) { }
-   async createUser(dto: CreateUserDto,) {
-      const user = await this.userRepository.create(dto);
-      const userId = user.id
-      await this.profileService.createProfile({ userId })
-      await this.basketService.createBasket({ userId })
-      const role = await this.roleService.getRoleByValue("USER")
-      await user.$set('roles', [role.id])
-      user.roles = [role]
-      return user;
-   }
-   async getAllUsers(limit: number, page: number) {
-      limit = limit || 4;
-      page = page || 1;
-      const offset = page * limit - limit;
-      const users = await this.userRepository.findAndCountAll({ include: { all: true }, limit, offset });
-      return users;
 
-   }
-   async getUserEmail(email: string) {
-      const user = await this.userRepository.findOne({ where: { email }, include: { all: true } })
+   async createUser(dto: CreateUserDto) {
+      const createdUser = new this.userModel(dto);
+      const user = await createdUser.save();
+
+      const userId = user._id.toString();
+
+      await this.profileService.createProfile({ userId });
+      await this.basketService.createBasket({ userId });
+
       return user;
    }
+   async findByEmail(email: string): Promise<User | null> {
+      return this.userModel.findOne({ email });
+   }
+   async getAllUsers() {
+      return this.userModel.find().exec();
+   }
+
    async addRole(dto: AddRoleDto) {
-      const user = await this.userRepository.findByPk(dto.userId);
-      const role = await this.roleService.getRoleByValue(dto.value);
-      if (role && user) {
-         await user.$add('role', role.id);
-         return dto;
-      }
-      throw new HttpException('მომხმარებელი ან როლი არ მოიძებნა', HttpStatus.NOT_FOUND)
-   }
-   async ban(dto: BanUserDto) {
-      const user = await this.userRepository.findByPk(dto.userId);
+      const user = await this.userModel.findById(dto.userId);
       if (!user) {
-         throw new HttpException('მომხმარებელი არ მოიძებნა', HttpStatus.NOT_FOUND)
+         throw new HttpException('მომხმარებელი არ მოიძებნა', HttpStatus.NOT_FOUND);
       }
-      user.baned = true;
-      user.banReason = dto.BanReason;
-      await user.save();
-      return user;
+
+      const role = await this.roleService.getRoleByValue(dto.value);
+      if (!role) {
+         throw new HttpException('როლი არ მოიძებნა', HttpStatus.NOT_FOUND);
+      }
+
+      if (!user.roles.includes(role.value)) {
+         user.roles.push(role.value);
+      }
+
+      return user.save();
    }
-   async getUserbyId(id: number) {
-      const user = await this.userRepository.findOne({ where: { id }, include: { all: true } })
-      return user;
+
+   async ban(dto: BanUserDto) {
+      const user = await this.userModel.findById(dto.userId);
+      if (!user) {
+         throw new HttpException('მომხმარებელი არ მოიძებნა', HttpStatus.NOT_FOUND);
+      }
+
+      user.isBanned = true;
+      user.banReason = dto.banReason;
+      return user.save();
    }
 }

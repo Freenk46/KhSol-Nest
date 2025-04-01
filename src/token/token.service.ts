@@ -1,32 +1,56 @@
-import { CreateTokenDto } from './dto/create-token.dto';
-import { User } from './../users/users.model';
-import { Token } from './token.model';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+
+import { Token, TokenDocument } from './token.schema';
+import { User, UserDocument } from '../users/users.schema'; // თუ საჭიროა ტოკენში payload-სთვის
+import { CreateTokenDto } from './dto/create-token.dto';
 
 @Injectable()
 export class TokenService {
    constructor(
-      @InjectModel(Token) private tokenRepository: typeof Token,
+      @InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
       private jwtService: JwtService,
    ) { }
-   async generateToken(user: User) {
-      const payload = { email: user.email, id: user.id, roles: user.roles }
+
+   async generateToken(user: UserDocument) {
+      const payload = {
+         id: user._id.toString(),
+         email: user.email,
+         roles: user.roles,
+      };
+      const accessToken = this.jwtService.sign(payload, {
+         expiresIn: '15m',
+      });
+
+      const refreshToken = this.jwtService.sign(payload, {
+         expiresIn: '7d',
+      });
+
       return {
-         accessToken: this.jwtService.sign(payload, { secret: process.env.JWT_ACCESS_SECRET, expiresIn: '24h' }),
-         refreshToken: this.jwtService.sign(payload, { secret: process.env.JWT_REFRES_SECRET, expiresIn: '30d' })
-      }
+         accessToken,
+         refreshToken,
+      };
    }
-   async saveToken(dto: CreateTokenDto) {
-      const userId = dto.userId
-      const tokenData = await this.tokenRepository.findOne({ where: { userId } });
+
+   async saveToken(dto: CreateTokenDto): Promise<Token> {
+      const tokenData = await this.tokenModel.findOne({ userId: dto.userId });
+
       if (tokenData) {
-         return await this.tokenRepository.update(dto, { where: { userId } });
+         tokenData.refreshToken = dto.refreshToken;
+         return tokenData.save();
       }
-      console.log("xuiii")
-      return await this.tokenRepository.create(dto);
+
+      const token = new this.tokenModel(dto);
+      return token.save();
    }
 
-}
+   async removeToken(refreshToken: string): Promise<void> {
+      await this.tokenModel.deleteOne({ refreshToken });
+   }
 
+   async findToken(refreshToken: string): Promise<Token | null> {
+      return this.tokenModel.findOne({ refreshToken });
+   }
+}

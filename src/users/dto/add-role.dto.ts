@@ -1,10 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+
 export class AddRoleDto {
-   @ApiProperty({ example: 'ADMIN', description: 'როლი' })
-   @IsString({ message: "უნდა იყოს  სტრიქონი" })
-   readonly value: string;
-   @ApiProperty({ example: '1', description: 'მომხმარებლის Id' })
-   @IsNumber({}, { message: "უნდა იყოს რიცხვი" })
-   readonly userId: number;
+   @IsMongoId({ message: 'არასწორი მომხმარებლის ID' })
+   userId!: string;
+
+   @IsString({ message: 'როლის მნიშვნელობა უნდა იყოს ტექსტური' })
+   @IsNotEmpty({ message: 'როლის ველი ცარიელი არ უნდა იყოს' })
+   value!: string;
 }

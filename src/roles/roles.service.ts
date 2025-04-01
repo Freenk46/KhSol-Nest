@@ -1,26 +1,27 @@
-import { Role } from './roles.model';
-import { InjectModel } from '@nestjs/sequelize';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Role, RoleDocument } from './roles.schema';
 
 @Injectable()
 export class RolesService {
-   constructor(@InjectModel(Role) private roleRepository: typeof Role) {
+   constructor(@InjectModel(Role.name) private roleModel: Model<RoleDocument>) { }
 
-   }
-   async createRole(dto: CreateRoleDto) {
-      const role = await this.roleRepository.create(dto)
-      return role;
-   }
-   async getRoleByValue(value: string) {
-      const role = await this.roleRepository.findOne({ where: { value } })
-      console.log(role)
-      return role;
+   async createRole(value: string, description?: string): Promise<Role> {
+      const existing = await this.roleModel.findOne({ value });
+      if (existing) {
+         throw new HttpException('როლი უკვე არსებობს', HttpStatus.BAD_REQUEST);
+      }
+
+      const newRole = new this.roleModel({ value, description });
+      return newRole.save();
    }
 
-   async getAllRoles() {
-      const procedure = await this.roleRepository.findAll();
-      return procedure;
+   async getRoleByValue(value: string): Promise<Role | null> {
+      return this.roleModel.findOne({ value });
+   }
 
+   async getAllRoles(): Promise<Role[]> {
+      return this.roleModel.find();
    }
 }

@@ -1,56 +1,34 @@
-import { PaginationParams } from './../PaginationParams';
-import { BanUserDto } from './dto/ban-user.tdo';
-import { AddRoleDto } from './dto/add-role.dto';
-import { RolesGuard } from './../auth/roles.guard';
-import { Roles } from './../auth/roles.decorator';
-import { User } from './users.model';
-import { Get, Param, Put, Query, UseGuards } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-@ApiTags('Users')
+import { CreateUserDto } from './dto/create-user.dto';
+import { AddRoleDto } from './dto/add-role.dto';
+import { BanUserDto } from './dto/ban-user.tdo';
+import { AuthGuard } from '@nestjs/passport';
+
 @Controller('users')
 export class UsersController {
+   constructor(private readonly usersService: UsersService) { }
 
-   constructor(private usersService: UsersService) { }
-
-   @ApiOperation({ summary: 'მომხმარებლის მოთხოვნა Id ' })
-   @ApiResponse({ status: 200 })
-   @Get(':Id')
-   getUserById(@Param('Id') id: number) {
-      return this.usersService.getUserbyId(id);
-   }
-
-   @ApiOperation({ summary: 'მომხმარებლის შექმნა' })
-   @ApiResponse({ status: 200, type: User })
    @Post()
-   create(@Body() userDto: CreateUserDto) {
-      return this.usersService.createUser(userDto)
+   @UsePipes(ValidationPipe)
+   async create(@Body() dto: CreateUserDto) {
+      return this.usersService.createUser(dto);
    }
-   @ApiOperation({ summary: 'ყველა მომხმარებლის მიღება' })
-   @ApiResponse({ status: 200, type: [User] })
+   @UseGuards(AuthGuard)
    @Get()
-   getAll(@Query() { limit, page }: PaginationParams) {
-
-      return this.usersService.getAllUsers(limit, page)
+   async getAll() {
+      return this.usersService.getAllUsers();
    }
-   @ApiOperation({ summary: 'უფლებების მინიჭება' })
-   @ApiResponse({ status: 200 })
-   @Roles("ADMIN")
+
    @Post('/role')
-   addRoleUser(@Body() dto: AddRoleDto) {
-      console.log(dto)
-      return this.usersService.addRole(dto)
-   }
-   @ApiOperation({ summary: 'მომხმარებლის დაბლოკვა' })
-   @ApiResponse({ status: 200 })
-   @Roles("ADMIN")
-
-   @Put('/ban')
-   banUser(@Body() dto: BanUserDto) {
-      return this.usersService.ban(dto)
+   @UsePipes(ValidationPipe)
+   async addRole(@Body() dto: AddRoleDto) {
+      return this.usersService.addRole(dto);
    }
 
-
+   @Post('/ban')
+   @UsePipes(ValidationPipe)
+   async ban(@Body() dto: BanUserDto) {
+      return this.usersService.ban(dto);
+   }
 }

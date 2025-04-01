@@ -1,52 +1,37 @@
-import { Token } from './token/token.model';
-import { ProcedureBasket } from 'src/basket/procedure-basket.model';
-import { Basket } from './basket/basket.model';
-import { ProcedureGender } from './procedures/procedure-gender.model';
-import { ProcedureType } from './procedures/procedure-type.model';
-import { ProcedureClass } from './procedures/procedure-class.model';
-import { Procedure } from './procedures/procedure.model';
-import { UserRoles } from './roles/user-roles.model';
-import { Role } from './roles/roles.model';
-import { User } from './users/users.model';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { Module } from "@nestjs/common";
-import { SequelizeModule } from '@nestjs/sequelize';
+import { MongooseModule } from '@nestjs/mongoose';
+
+// მოდულების შემოტანა
 import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
-import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
-import { Profile } from './profile/profile.model';
-import { ProceduresModule } from './procedures/procedures.module';
 import { BasketModule } from './basket/basket.module';
-import { TokenModule } from './token/token.module';
 import { MailModule } from './mail/mail.module';
+import { ProceduresModule } from './procedures/procedures.module';
+import { AuthModule } from './auth/auth.module';
+import { TokenModule } from './token/token.module';
 
 
 @Module({
-   controllers: [],
-   providers: [],
    imports: [
+      // .env ფაილის ჩართვა
       ConfigModule.forRoot({
-         envFilePath: `.${process.env.NODE_ENV}.env`
+         isGlobal: true,
       }),
-      SequelizeModule.forRoot({
-         dialect: 'postgres',
-         host: process.env.POSTGRES_HOST,
-         port: Number(process.env.POSTGRES_PORT),
-         username: process.env.POSTGRES_USER,
-         password: process.env.POSTGRES_PASSWORD,
-         database: process.env.POSTGRES_DB,
-         models: [User, Role, UserRoles, Profile, Procedure, ProcedureClass, ProcedureType, ProcedureGender, Basket, ProcedureBasket, Token],
-         autoLoadModels: true
-      }),
+
+      // MongoDB კონფიგურაცია
+      MongooseModule.forRoot(process.env.MONGO_URI!),
+
+      // პროექტის მოდულები
       UsersModule,
       RolesModule,
-      AuthModule,
       ProfileModule,
-      ProceduresModule,
       BasketModule,
+      MailModule,
+      ProceduresModule,
+      AuthModule,
       TokenModule,
-      MailModule
-   ]
+   ],
 })
 export class AppModule { }
