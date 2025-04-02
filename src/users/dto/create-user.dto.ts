@@ -8,6 +8,6 @@ export class CreateUserDto {
    @MinLength(6)
    readonly password!: string;
 
-   @IsNotEmpty()
-   readonly activationLink!: string;
+   //  @IsNotEmpty()
+   //  readonly activationLink?: string;
 }
