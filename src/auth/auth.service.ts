@@ -40,7 +40,7 @@ export class AuthService {
       }
 
       const hashPassword = await bcrypt.hash(userDto.password, 5);
-      const activationLink = uuid.v4();
+      //  const activationLink = uuid.v4();
 
       const user = await this.userService.createUser({
          ...userDto,
@@ -48,7 +48,7 @@ export class AuthService {
          //  activationLink,
       });
 
-      await this.mailService.sendActivationMail(user.email, activationLink);
+      //  await this.mailService.sendActivationMail(user.email, activationLink);
 
       const tokens = await this.tokenService.generateToken(user);
       await this.tokenService.saveToken({
