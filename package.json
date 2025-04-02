@@ -6,10 +6,13 @@
   "scripts": {
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "build": "nest build",
+    "build": "npx nest build",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest"
+  },
+  "engines": {
+    "node": "18.x"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
@@ -39,7 +42,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^10.2.1",
+    "@nestjs/cli": "^10.4.9",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.2.7",
     "@types/bcryptjs": "^2.4.6",
