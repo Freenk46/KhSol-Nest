@@ -18,5 +18,5 @@ export class UpdateProfileDto {
    address?: string;
 
    @IsString()
-   userId?: string;
+   userId!: string;
 }
