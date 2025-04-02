@@ -3,7 +3,6 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AddRoleDto } from './dto/add-role.dto';
 import { BanUserDto } from './dto/ban-user.tdo';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -14,7 +13,7 @@ export class UsersController {
    async create(@Body() dto: CreateUserDto) {
       return this.usersService.createUser(dto);
    }
-   @UseGuards(AuthGuard)
+
    @Get()
    async getAll() {
       return this.usersService.getAllUsers();
