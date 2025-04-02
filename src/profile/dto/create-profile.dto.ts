@@ -18,5 +18,5 @@ export class CreateProfileDto {
    address?: string;
 
    @IsString()
-   userId?: string;
+   userId!: string;
 }
