@@ -31,7 +31,7 @@ export class ProfileController {
    }
 
    @Put(':id')
-   @UseGuards(JwtAuthGuar)
+   // @UseGuards(JwtAuthGuar)
    update(@Param('id') id: string, @Body() updateDto: UpdateProfileDto) {
       return this.profileService.update(id, updateDto);
    }
