@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { TokenModule } from '../token/token.module';
 import { MailModule } from 'src/mail/mail.module';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { MailModule } from 'src/mail/mail.module';
     UsersModule,
     forwardRef(() => TokenModule),
   ],
-
+  controllers: [AuthController],
   providers: [AuthService],
   exports: [AuthService, JwtModule],
 })
