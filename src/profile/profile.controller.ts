@@ -13,6 +13,7 @@ import {
 import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { JwtAuthGuar } from 'src/auth/jwt-auth.guard';
 
 @Controller('profile')
 export class ProfileController {
@@ -30,8 +31,7 @@ export class ProfileController {
    }
 
    @Put(':id')
-   // @UseGuards(JwtAuthGuard)
-   @UsePipes(ValidationPipe)
+   @UseGuards(JwtAuthGuar)
    update(@Param('id') id: string, @Body() updateDto: UpdateProfileDto) {
       return this.profileService.update(id, updateDto);
    }
