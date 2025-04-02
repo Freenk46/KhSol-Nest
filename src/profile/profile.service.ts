@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Profile, ProfileDocument } from './profile.schema';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class ProfileService {
@@ -23,17 +24,11 @@ export class ProfileService {
       return this.profileModel.findOne({ userId });
    }
 
-   async updateProfile(userId: string, updates: Partial<Profile>): Promise<Profile> {
-      const profile = await this.profileModel.findOneAndUpdate(
-         { userId },
-         updates,
-         { new: true },
-      );
-
-      if (!profile) {
-         throw new HttpException('პროფილი ვერ განახლდა', HttpStatus.NOT_FOUND);
+   async update(id: string, updateDto: UpdateProfileDto): Promise<Profile> {
+      const updated = await this.profileModel.findByIdAndUpdate(id, updateDto, { new: true });
+      if (!updated) {
+         throw new HttpException('პროფილი ვერ განახლდა', HttpStatus.BAD_REQUEST);
       }
-
-      return profile;
+      return updated;
    }
 }
