@@ -5,6 +5,8 @@ import {
    Param,
    Patch,
    Post,
+   Put,
+   UseGuards,
    UsePipes,
    ValidationPipe,
 } from '@nestjs/common';
@@ -27,9 +29,10 @@ export class ProfileController {
       return this.profileService.getProfileByUserId(userId);
    }
 
-   @Patch(':userId')
+   @Put(':id')
+   // @UseGuards(JwtAuthGuard)
    @UsePipes(ValidationPipe)
-   async update(@Param('userId') userId: string, @Body() dto: UpdateProfileDto) {
-      return this.profileService.updateProfile(userId, dto);
+   update(@Param('id') id: string, @Body() updateDto: UpdateProfileDto) {
+      return this.profileService.update(id, updateDto);
    }
 }

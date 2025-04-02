@@ -7,7 +7,7 @@ async function bootstrap() {
 
    // 🌐 CORS-ის ჩართვა (მნიშვნელოვანია თუ front-end უკავშირდება)
    app.enableCors();
-
+   app.setGlobalPrefix('api');
    // ✅ გლობალური ValidationPipe — class-validator + class-transformer მუშაობისთვის
    app.useGlobalPipes(
       new ValidationPipe({
