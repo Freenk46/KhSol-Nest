@@ -6,6 +6,9 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class ProfileService {
+   updateProfile(userId: string, dto: UpdateProfileDto) {
+      throw new Error('Method not implemented.');
+   }
    constructor(
       @InjectModel(Profile.name) private profileModel: Model<ProfileDocument>,
    ) { }

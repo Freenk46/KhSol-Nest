@@ -11,6 +11,7 @@ import { MailModule } from './mail/mail.module';
 import { ProceduresModule } from './procedures/procedures.module';
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
+import { ChatModule } from './chat/chat.module';
 
 
 @Module({
@@ -32,6 +33,7 @@ import { TokenModule } from './token/token.module';
       ProceduresModule,
       AuthModule,
       TokenModule,
+      ChatModule
    ],
 })
 export class AppModule { }
