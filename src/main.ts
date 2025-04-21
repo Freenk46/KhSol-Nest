@@ -1,16 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
+
 async function bootstrap() {
    const app = await NestFactory.create(AppModule);
-
+   app.use(cookieParser());
    // 🌐 CORS-ის ჩართვა (მნიშვნელოვანია თუ front-end უკავშირდება)
    app.enableCors({
-      origin: ['http://localhost:3000', 'https://yourfrontend.com'],
+      origin: 'http://localhost:3000',
       credentials: true,
     });
-    app.use(cookieParser());
    app.setGlobalPrefix('api');
    // ✅ გლობალური ValidationPipe — class-validator + class-transformer მუშაობისთვის
    app.useGlobalPipes(
