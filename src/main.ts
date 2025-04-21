@@ -8,7 +8,7 @@ async function bootstrap() {
    app.use(cookieParser());
    // 🌐 CORS-ის ჩართვა (მნიშვნელოვანია თუ front-end უკავშირდება)
    app.enableCors({
-      origin: 'http://localhost:3000',
+      origin: ['http://localhost:3000', 'https://khsol-nest.onrender.com'],
       credentials: true,
     });
    app.setGlobalPrefix('api');
