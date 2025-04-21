@@ -11,6 +11,9 @@ import { BasketService } from './../basket/basket.service';
 
 @Injectable()
 export class UsersService {
+   async getUserByEmail(email: string): Promise<UserDocument | null> {
+      return this.userModel.findOne({ email });
+    }
    constructor(
       @InjectModel(User.name) private userModel: Model<UserDocument>,
       private roleService: RolesService,

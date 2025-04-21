@@ -9,6 +9,7 @@ import { CreateTokenDto } from './dto/create-token.dto';
 
 @Injectable()
 export class TokenService {
+  
    constructor(
       @InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
       private jwtService: JwtService,
@@ -53,4 +54,12 @@ export class TokenService {
    async findToken(refreshToken: string): Promise<Token | null> {
       return this.tokenModel.findOne({ refreshToken });
    }
+
+   validateRefreshToken(token: string): any {
+      try {
+        return this.jwtService.verify(token);
+      } catch (e) {
+        return null;
+      }
+    }
 }

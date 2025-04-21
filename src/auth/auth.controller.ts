@@ -1,20 +1,42 @@
-import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateUserDto } from '../users/dto/create-user.dto';
-
-@Controller('auth')
-export class AuthController {
-   constructor(private readonly authService: AuthService) { }
-
-   @Post('/login')
-   @UsePipes(ValidationPipe)
-   async login(@Body() dto: CreateUserDto) {
-      return this.authService.login(dto);
+import {
+   Controller,
+   Post,
+   Req,
+   Res,
+   UnauthorizedException,
+ } from '@nestjs/common';
+ import { AuthService } from './auth.service';
+ import { Request, Response } from 'express';
+ 
+ @Controller('auth')
+ export class AuthController {
+   constructor(private readonly authService: AuthService) {}
+ 
+   @Post('refresh')
+   async refresh(@Req() req: Request, @Res() res: Response) {
+     const refreshToken = req.cookies?.refreshToken;
+ 
+     if (!refreshToken) {
+       return res.status(401).json({ message: 'Refresh token missing' });
+     }
+ 
+     try {
+       const data = await this.authService.refreshTokens(refreshToken);
+ 
+       return res
+         .cookie('refreshToken', data.refreshToken, {
+           httpOnly: true,
+           secure: true,
+           sameSite: 'lax',
+           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 დღე
+         })
+         .json({
+           accessToken: data.accessToken,
+           user: data.user,
+         });
+     } catch (e) {
+       return res.status(401).json({ message: 'Invalid token' });
+     }
    }
-
-   @Post('/registration')
-   @UsePipes(ValidationPipe)
-   async registration(@Body() dto: CreateUserDto) {
-      return this.authService.registration(dto);
-   }
-}
+ }
+ 

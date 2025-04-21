@@ -7,16 +7,46 @@ import { UsersService } from '../users/users.service';
 import { TokenService } from '../token/token.service';
 import { MailService } from '../mail/mail.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { UserDocument } from '../users/users.schema';
+import { User, UserDocument } from '../users/users.schema';
 
 @Injectable()
 export class AuthService {
-   constructor(
+constructor(
       private readonly userService: UsersService,
       private readonly jwtService: JwtService,
       private readonly tokenService: TokenService,
       private readonly mailService: MailService,
    ) { }
+   async refreshTokens(refreshToken: string): Promise<{
+      accessToken: string;
+      refreshToken: string;
+      user: User;
+    }> {
+      const userData = this.tokenService.validateRefreshToken(refreshToken);
+      const tokenFromDb = await this.tokenService.findToken(refreshToken);
+    
+      if (!userData || !tokenFromDb) {
+        throw new UnauthorizedException();
+      }
+    
+      const user = await this.userService.getUserByEmail(userData.email);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+    
+      const tokens = await this.tokenService.generateToken(user);
+      await this.tokenService.saveToken({
+        userId: user._id,
+        refreshToken: tokens.refreshToken,
+      });
+    
+      return {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        user,
+      };
+    }
+  
 
    async login(userDto: CreateUserDto) {
       const user = await this.validateUser(userDto) as UserDocument;
@@ -75,4 +105,6 @@ export class AuthService {
 
       return user;
    }
+   
+    
 }
