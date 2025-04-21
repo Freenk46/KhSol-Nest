@@ -6,7 +6,10 @@ async function bootstrap() {
    const app = await NestFactory.create(AppModule);
 
    // 🌐 CORS-ის ჩართვა (მნიშვნელოვანია თუ front-end უკავშირდება)
-   app.enableCors();
+   app.enableCors({
+      origin: `https://khsol-nest.onrender.com`, // ან შენი ფრონტის რეალური დომენი
+      credentials: true,
+    });
    app.setGlobalPrefix('api');
    // ✅ გლობალური ValidationPipe — class-validator + class-transformer მუშაობისთვის
    app.useGlobalPipes(
