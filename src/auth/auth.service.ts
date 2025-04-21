@@ -15,8 +15,11 @@ constructor(
       private readonly userService: UsersService,
       private readonly jwtService: JwtService,
       private readonly tokenService: TokenService,
-      private readonly mailService: MailService,
+ 
    ) { }
+   async logout(refreshToken: string): Promise<void> {
+      await this.tokenService.removeToken(refreshToken);
+    }
    async refreshTokens(refreshToken: string): Promise<{
       accessToken: string;
       refreshToken: string;
