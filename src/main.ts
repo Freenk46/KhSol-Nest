@@ -6,8 +6,13 @@ async function bootstrap() {
    const app = await NestFactory.create(AppModule);
 
    // 🌐 CORS-ის ჩართვა (მნიშვნელოვანია თუ front-end უკავშირდება)
-   app.enableCors({
-      origin: `http://localhost:3000`, // ან შენი ფრონტის რეალური დომენი
+   const allowedOrigins = [
+      'http://localhost:3000',
+      'https://lasersola.com' // ან სხვა რეალური production ფრონტიც
+    ];
+    
+    app.enableCors({
+      origin: allowedOrigins,
       credentials: true,
     });
    app.setGlobalPrefix('api');
