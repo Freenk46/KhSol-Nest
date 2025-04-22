@@ -15,8 +15,9 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
    constructor(private readonly authService: AuthService) {}
    @Post('login')
    async login(@Body() dto: CreateUserDto, @Res() res: Response) {
+    console.log('res',{res});
      const data = await this.authService.login(dto);
-   
+     console.log('res',{data});
      res
        .cookie('refreshToken', data.refreshToken, {
          httpOnly: true,

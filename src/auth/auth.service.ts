@@ -5,7 +5,6 @@ import * as uuid from 'uuid';
 
 import { UsersService } from '../users/users.service';
 import { TokenService } from '../token/token.service';
-import { MailService } from '../mail/mail.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User, UserDocument } from '../users/users.schema';
 
@@ -53,13 +52,14 @@ constructor(
 
    async login(userDto: CreateUserDto) {
       const user = await this.validateUser(userDto) as UserDocument;
+      console.log('validateUser',{user});
       const tokens = await this.tokenService.generateToken(user);
-
+console.log('tokens',{tokens});
       await this.tokenService.saveToken({
          userId: user._id.toString(),
          refreshToken: tokens.refreshToken,
       });
-
+      console.log('user',{user});
       return {
          ...tokens,
          user,
